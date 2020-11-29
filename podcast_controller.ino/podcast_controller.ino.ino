@@ -142,7 +142,7 @@ void loop() {
     deleteRecording();
     updateLeds();
   }
-  delay(100);
+  delay(10);
 }
 
 void resetEverything() {
