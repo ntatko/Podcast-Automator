@@ -2,7 +2,7 @@
 
 This is a simple piece of code that uses a teensy 4.0 board to help my (mostly) blind use and operate a podcast recorder. I'm using Reaper64 to record his audio. Just hook up some buttons, and be able to control your computer using big, visible arcade buttons. 
 
-<img src="https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/wiring_button_face.png" width=300 />
+<img src="https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/wiring_button_face.jpg" width="300" />
 
 ## Parts List
 
