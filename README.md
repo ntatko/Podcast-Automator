@@ -4,6 +4,10 @@ This is a simple piece of code that uses a teensy 4.0 board to help my (mostly) 
 
 <img src="https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/wiring_button_face.jpg" width="300" />
 
+### Why this layout?
+
+If you make your own version, you have the right to lay out your buttons any way you choose. That being said, if you're putting your buttons into a project box that has rotational symmetry, take that into consideration. A triangle and a square have different rotational symmetries, so as long as you're holding the sides and the buttons point away from you, you're holding it right.
+
 ## Parts List
 
 *To buy*
