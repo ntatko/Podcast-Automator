@@ -1,9 +1,10 @@
+#include <EEPROM.h>
 #include <Bounce2.h>
 
 bool readyToRecord = false;
 bool recording = false;
 bool isRecorded = false;
-bool issaveed = false;
+bool isSaved = false;
 
 Bounce button_openProgram = Bounce();
 Bounce button_startRecording = Bounce();
@@ -23,8 +24,8 @@ const int led_deleteRecording = 22;
 const int led_openProgram = 21;
 const int led_reset = 20;
 const int led_startRecording = 19;
-const int led_saveRecording = 18;
-const int led_playbackRecording = 17;
+const int led_saveRecording = 17;
+const int led_playbackRecording = 18;
 
 int lights[] = { led_openProgram, led_startRecording, led_saveRecording, led_playbackRecording, led_deleteRecording, led_reset };
 bool isNotOpenLights[sizeof(lights)] = { true, true, true, true, true, true };
@@ -110,8 +111,9 @@ void loop() {
   Serial.print("\tsave: ");
   Serial.println(digitalRead(PIN_saveRecording));
 
+  String saveName;
+
   if ( button_reset.fell() ) {
-    Serial.println("pressed reset");
     resetEverything();
     updateLeds();
   } else if ( button_openProgram.fell() && !recording ) {
@@ -136,11 +138,11 @@ void loop() {
     updateLeds();
   } else if ( button_saveRecording.fell() && isRecorded ) {
     Serial.println("pressed save");
-    saveRecording();
+    saveName = saveRecording();
     deleteRecording();
     updateLeds();
   }
-  delay(10);
+  delay(100);
 }
 
 void resetEverything() {
@@ -156,10 +158,13 @@ void resetEverything() {
   Keyboard.press(KEY_N);
   Keyboard.release(KEY_N);
 
+  //reset leds here manually
+  resetLeds();
+
   readyToRecord = false;
   recording = false;
   isRecorded = false;
-  issaveed = false;
+  isSaved = false;
 }
 
 void openProgram() {
@@ -173,21 +178,7 @@ void openProgram() {
   Keyboard.release(KEY_ENTER);
 
   // wait 10 seconds for the program to open
-  delay(10000);
-
-  //TODO - might need something here to dismiss a notification
-
-  readyToRecord = true;
-  recording = false;
-  isRecorded = false;
-  issaveed = false;
-}
-
-void startRecording() {
-
-  // mute speakers
-  Keyboard.press(KEY_MEDIA_MUTE);
-  Keyboard.release(KEY_MEDIA_MUTE);
+  delay(5000);
 
   // create track within reaper
   Keyboard.press(MODIFIERKEY_CTRL);
@@ -195,6 +186,21 @@ void startRecording() {
   delay(100);
   Keyboard.release(MODIFIERKEY_CTRL);
   Keyboard.release(KEY_T);
+  
+
+  //TODO - might need something here to dismiss a notification
+
+  readyToRecord = true;
+  recording = false;
+  isRecorded = false;
+  isSaved = false;
+}
+
+void startRecording() {
+
+  // mute speakers
+  Keyboard.press(KEY_MEDIA_MUTE);
+  Keyboard.release(KEY_MEDIA_MUTE);
 
   // arm track for recording
   // TODO - make a keybinding within the app that responds to CTRL+9 which arms all tracks for recording
@@ -224,10 +230,6 @@ void stopRecording() {
   Keyboard.release(MODIFIERKEY_CTRL);
   Keyboard.release(KEY_R);
 
-  // unmute speakers
-  Keyboard.press(KEY_MEDIA_MUTE);
-  Keyboard.release(KEY_MEDIA_MUTE);
-
   // unarm track for recording
   // TODO - make a keybinding in the app that responds to CTRL+8 which un arms all tracks for recording
   Keyboard.press(MODIFIERKEY_CTRL);
@@ -235,6 +237,10 @@ void stopRecording() {
   delay(100);
   Keyboard.release(MODIFIERKEY_CTRL);
   Keyboard.release(KEY_8);
+
+  // unmute speakers
+  Keyboard.press(KEY_MEDIA_MUTE);
+  Keyboard.release(KEY_MEDIA_MUTE);
 
   isRecorded = true;
   recording = false;
@@ -246,7 +252,7 @@ void playbackRecording() {
   Keyboard.release(KEY_SPACE);
 }
 
-void saveRecording() {
+String saveRecording() {
   // Right now, I'm using google drive, things automatically show up in a folder. Tab and shift+tab can be used
 
   // Technically called "render", pulls up a prompt
@@ -259,7 +265,7 @@ void saveRecording() {
   Keyboard.release(KEY_R);
 
   // Fill out render options prompt
-  String randomString = "Somerandomstring";
+  String randomString = generateRecordingName();
   Keyboard.println(randomString);
 
   // wait for file to finish rendering
@@ -269,7 +275,9 @@ void saveRecording() {
   Keyboard.release(KEY_ENTER);
 
   isRecorded = false;
-  issaveed = true;
+  isSaved = true;
+
+  return randomString;
 }
 
 void deleteRecording() {
@@ -284,29 +292,63 @@ void deleteRecording() {
   Keyboard.press(KEY_DELETE);
   Keyboard.release(KEY_DELETE);
 
-  // reaper will want confirmation
-  delay(200);
-  Keyboard.press(KEY_ENTER);
-  Keyboard.release(KEY_ENTER);
+//  // reaper will want confirmation
+//  delay(200);
+//  Keyboard.press(KEY_ENTER);
+//  Keyboard.release(KEY_ENTER);
 
   readyToRecord = true;
   recording = false;
   isRecorded = false;
-  issaveed = false;
+  isSaved = false;
 }
 
 void updateLeds() {
-//  bool boolArr[ sizeof(lights)];
-//
-//  if ( readyToRecord ) {
-//    *boolArr = readyLights;
-//  } else if ( recording ) {
-//    *boolArr = recordingLights;
-//  } else if ( isRecorded ) {
-//    *boolArr = isRecordedLights;
-//  }
-//
-//  for ( int i = 0; i < sizeof(lights); i++ ) {
-//    digitalWrite(lights[i], boolArr[i]);
-//  }
+
+  if (readyToRecord && !recording && !isRecorded ) {
+    digitalWrite(led_startRecording, HIGH);
+    digitalWrite(led_reset, HIGH);
+
+    digitalWrite(led_deleteRecording, LOW);
+    digitalWrite(led_openProgram, LOW);
+    digitalWrite(led_saveRecording, LOW);
+    digitalWrite(led_playbackRecording, LOW);
+  } else if ( !readyToRecord && recording && !isRecorded ) {
+    digitalWrite(led_startRecording, HIGH);
+    
+    digitalWrite(led_reset, LOW);
+    digitalWrite(led_deleteRecording, LOW);
+    digitalWrite(led_openProgram, LOW);
+    digitalWrite(led_saveRecording, LOW);
+    digitalWrite(led_playbackRecording, LOW);
+  } else if ( !readyToRecord && !recording && isRecorded ) {
+    digitalWrite(led_startRecording, LOW);
+    digitalWrite(led_openProgram, LOW);
+    
+    digitalWrite(led_reset, HIGH);
+    digitalWrite(led_deleteRecording, HIGH);
+    digitalWrite(led_saveRecording, HIGH);
+    digitalWrite(led_playbackRecording, HIGH);
+  }
 }
+
+String generateRecordingName(){
+  int generated=0;
+  String string = "";
+  while ( generated < 6 ) {
+    byte randomValue = random(0, 26);
+    char letter = randomValue + 'a';
+    string += letter;
+    generated ++;
+  }
+  return string;
+ }
+
+ void resetLeds() {
+  digitalWrite(led_startRecording, HIGH);
+  digitalWrite(led_openProgram, HIGH);
+  digitalWrite(led_reset, HIGH);
+  digitalWrite(led_deleteRecording, HIGH);
+  digitalWrite(led_saveRecording, HIGH);
+  digitalWrite(led_playbackRecording, HIGH);
+ }
