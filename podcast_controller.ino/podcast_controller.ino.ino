@@ -5,102 +5,142 @@ bool recording = false;
 bool isRecorded = false;
 bool issaveed = false;
 
-const Bounce button_openProgram = Bounce();
-const Bounce button_startRecording = Bounce();
-const Bounce button_saveRecording = Bounce();
-const Bounce button_playbackRecording = Bounce();
-const Bounce button_deleteRecording = Bounce();
-const Bounce button_reset = Bounce();
+Bounce button_openProgram = Bounce();
+Bounce button_startRecording = Bounce();
+Bounce button_saveRecording = Bounce();
+Bounce button_playbackRecording = Bounce();
+Bounce button_deleteRecording = Bounce();
+Bounce button_reset = Bounce();
 
-const int PIN_openProgram = 10;
-const int PIN_startRecording = 11;
-const int PIN_stopRecording = 12;
-const int PIN_saveRecording = 13;
-const int PIN_playbackRecording = 14;
-const int PIN_deleteRecording = 15;
-const int PIN_reset = 16;
+const int PIN_deleteRecording = 2;
+const int PIN_openProgram = 3;
+const int PIN_reset = 4;
+const int PIN_startRecording = 5;
+const int PIN_saveRecording = 9;
+const int PIN_playbackRecording = 7;
 
-const int led_openProgram = 3;
-const int led_startRecording = 4;
-const int led_saveRecording = 6;
-const int led_playbackRecording = 7;
-const int led_deleteRecording = 8;
-const int led_reset = 9;
+const int led_deleteRecording = 22;
+const int led_openProgram = 21;
+const int led_reset = 20;
+const int led_startRecording = 19;
+const int led_saveRecording = 18;
+const int led_playbackRecording = 17;
 
-int lights[] = { led_openProgram, led_startRecording, led_saveRecording, led_playbackRecording, led_deleteRecording };
-bool isNotOpenLights[sizeof(lights)] = { true, false, false, false, false };
-bool readyLights[sizeof(lights)] = { true, true, false, false, false };
-bool recordingLights[sizeof(lights)] = { false, true, false, false, false };
-bool isRecordedLights[sizeof(lights)] = { true, false, true, true, true, true };
+int lights[] = { led_openProgram, led_startRecording, led_saveRecording, led_playbackRecording, led_deleteRecording, led_reset };
+bool isNotOpenLights[sizeof(lights)] = { true, true, true, true, true, true };
+bool readyLights[sizeof(lights)] = { true, true, false, false, false, true };
+bool recordingLights[sizeof(lights)] = { false, true, false, false, false, true };
+bool isRecordedLights[sizeof(lights)] = { true, false, true, true, true, true, true };
 
 void setup() {
   // put your setup code here, to run once:
 
-  button_openProgram.attach(PIN_openProgram, INPUT);
-  button_startRecording.attach(PIN_startRecording, INPUT);
-  button_saveRecording.attach(PIN_saveRecording, INPUT);
-  button_playbackRecording.attach(PIN_playbackRecording, INPUT);
-  button_deleteRecording.attach(PIN_deleteRecording, INPUT);
-  button_reset.attach(PIN_reset, INPUT);
+  button_openProgram.attach(PIN_openProgram, INPUT_PULLUP);
+  button_startRecording.attach(PIN_startRecording, INPUT_PULLUP);
+  button_saveRecording.attach(PIN_saveRecording, INPUT_PULLUP);
+  button_playbackRecording.attach(PIN_playbackRecording, INPUT_PULLUP);
+  button_deleteRecording.attach(PIN_deleteRecording, INPUT_PULLUP);
+  button_reset.attach(PIN_reset, INPUT_PULLUP);
+  
   button_openProgram.interval(25);
   button_startRecording.interval(25);
   button_saveRecording.interval(25);
   button_playbackRecording.interval(25);
   button_deleteRecording.interval(25);
   button_reset.interval(25);
+
+//  pinMode(PIN_deleteRecording, INPUT_PULLUP);
+//  pinMode(PIN_openProgram, INPUT_PULLUP);
+//  pinMode(PIN_reset, INPUT_PULLUP);
+//  pinMode(PIN_startRecording, INPUT_PULLUP);
+//  pinMode(PIN_saveRecording, INPUT_PULLUP);
+//  pinMode(PIN_playbackRecording, INPUT_PULLUP);
   
   pinMode(led_openProgram, OUTPUT);
   pinMode(led_startRecording, OUTPUT);
   pinMode(led_saveRecording, OUTPUT);
-  pinMode(PIN_playbackRecording, OUTPUT);
+  pinMode(led_playbackRecording, OUTPUT);
   pinMode(led_deleteRecording, OUTPUT);
+  pinMode(led_reset, OUTPUT);
+
+  Serial.begin(9600);
 
   // TEST SEQUENCE - DELTE
-  delay(10000); // need to wait after being plugged in to init USB keyboard connection
+  delay(1000); // need to wait after being plugged in to init USB keyboard connection
+
+  digitalWrite(led_openProgram , HIGH);
+  digitalWrite(led_startRecording , HIGH);
+  digitalWrite(led_saveRecording , HIGH);
+  digitalWrite(led_playbackRecording , HIGH);
+  digitalWrite(led_deleteRecording , HIGH);
+  digitalWrite(led_reset , HIGH);
+
+  Serial.println("Starting");
   
-  openProgram();
-  delay(5000);
-  startRecording();
-  delay(4000);
-  stopRecording();
-  playbackRecording();
-  delay(4000);
-  saveRecording();
-  delay(2000);
-  resetEverything();
+//  openProgram();
+//  delay(5000);
+//  startRecording();
+//  delay(4000);
+//  stopRecording();
+//  playbackRecording();
+//  delay(4000);
+//  saveRecording();
+//  delay(2000);
+//  resetEverything();
 }
 
 void loop() {
-  button_openProgram.interval(25);
-  button_startRecording.interval(25);
-  button_saveRecording.interval(25);
-  button_playbackRecording.interval(25);
-  button_deleteRecording.interval(25);
-  button_reset.interval(25);
+  button_openProgram.update();
+  button_startRecording.update();
+  button_saveRecording.update();
+  button_playbackRecording.update();
+  button_deleteRecording.update();
+  button_reset.update();
 
-  if ( button_reset.rose() ) {
+  Serial.print("data: \treset: ");
+  Serial.print(digitalRead(PIN_reset));
+  Serial.print("\topen: ");
+  Serial.print(digitalRead(PIN_openProgram));
+  Serial.print("\tstart: ");
+  Serial.print(digitalRead(PIN_startRecording));
+  Serial.print("\tplayback: ");
+  Serial.print(digitalRead(PIN_playbackRecording));
+  Serial.print("\tdelete: ");
+  Serial.print(digitalRead(PIN_deleteRecording));
+  Serial.print("\tsave: ");
+  Serial.println(digitalRead(PIN_saveRecording));
+
+  if ( button_reset.fell() ) {
+    Serial.println("pressed reset");
     resetEverything();
     updateLeds();
-  } else if ( button_openProgram.rose() && !recording ) {
+  } else if ( button_openProgram.fell() && !recording ) {
+    Serial.println("pressed open");
     openProgram();
     updateLeds();
-  } else if ( button_startRecording.rose() && !recording && readyToRecord ) {
+  } else if ( button_startRecording.fell() && !recording && readyToRecord ) {
+    Serial.println("pressed start");
     startRecording();
     updateLeds();
-  } else if ( button_startRecording.rose() && recording ) {
+  } else if ( button_startRecording.fell() && recording ) {
+    Serial.println("pressed stop");
     stopRecording();
     updateLeds();
-  } else if ( button_playbackRecording.rose() && isRecorded ) {
+  } else if ( button_playbackRecording.fell() && isRecorded ) {
+    Serial.println("pressed playback");
     playbackRecording();
     updateLeds();
-  } else if ( button_deleteRecording.rose() && isRecorded ) {
+  } else if ( button_deleteRecording.fell() && isRecorded ) {
+    Serial.println("pressed delete");
     deleteRecording();
     updateLeds();
-  } else if ( button_saveRecording.rose() && isRecorded ) {
+  } else if ( button_saveRecording.fell() && isRecorded ) {
+    Serial.println("pressed save");
     saveRecording();
     deleteRecording();
     updateLeds();
   }
+  delay(10);
 }
 
 void resetEverything() {
@@ -256,17 +296,17 @@ void deleteRecording() {
 }
 
 void updateLeds() {
-  bool boolArr[ sizeof(lights)];
-
-  if ( readyToRecord ) {
-    *boolArr = readyLights;
-  } else if ( recording ) {
-    *boolArr = recordingLights;
-  } else if ( isRecorded ) {
-    *boolArr = isRecordedLights;
-  }
-
-  for ( int i = 0; i < sizeof(lights); i++ ) {
-    digitalWrite(lights[i], boolArr[i]);
-  }
+//  bool boolArr[ sizeof(lights)];
+//
+//  if ( readyToRecord ) {
+//    *boolArr = readyLights;
+//  } else if ( recording ) {
+//    *boolArr = recordingLights;
+//  } else if ( isRecorded ) {
+//    *boolArr = isRecordedLights;
+//  }
+//
+//  for ( int i = 0; i < sizeof(lights); i++ ) {
+//    digitalWrite(lights[i], boolArr[i]);
+//  }
 }
