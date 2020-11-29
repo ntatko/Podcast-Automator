@@ -5,4 +5,4 @@ This is a simple piece of code that uses a teensy 4.0 board to help my (mostly) 
 # Wiring
 
 
-![alt text](https://github.com/ntatko/Podcast-Automator/blob/main/fritzing_drawing.png?raw=true)
+![alt text](https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/fritzing_drawing.png)
