@@ -2,6 +2,8 @@
 
 This is a simple piece of code that uses a teensy 4.0 board to help my (mostly) blind use and operate a podcast recorder. I'm using Reaper64 to record his audio. Just hook up some buttons, and be able to control your computer using big, visible arcade buttons. 
 
+![simple fritzing wiring diagram](https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/wiring_button_face.png | width: 300)
+
 ## Parts List
 
 *To buy*
@@ -20,7 +22,7 @@ I didn't include wire or connectors in this, because you can do whatever you wan
 
 ## Wiring
 
-![simple fritzing wiring diagram](https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/fritzing_drawing.png)
-![teensy and terminal block](https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/wiring_terminal_block.jpg)
-![back of buttons](https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/wiring_buttons.jpg)
+![simple fritzing wiring diagram](https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/fritzing_drawing.png | width: 300)
+![teensy and terminal block](https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/wiring_terminal_block.jpg | width: 300)
+![back of buttons](https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/wiring_buttons.jpg | width: 300)
 
