@@ -26,7 +26,7 @@ I didn't include wire or connectors in this, because you can do whatever you wan
 
 ## Wiring
 
-![simple fritzing wiring diagram](https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/fritzing_drawing.png)
-![teensy and terminal block](https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/wiring_terminal_block.jpg)
-![back of buttons](https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/wiring_buttons.jpg)
+<img alt="simple fritzing wiring diagram" src="https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/fritzing_drawing.png" width="400"/>
+<img alt"teensy and terminal block" src="https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/wiring_terminal_block.jpg" width="300"/>
+<img atl="back of buttons" src="https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/wiring_buttons.jpg" width="300"/>
 
