@@ -32,7 +32,7 @@ Fritzing wiring diagram
 
 The teensy and terminal block
 
-<img alt"teensy and terminal block" src="https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/wiring_terminal_block.jpg" width="600"/>
+<img alt="teensy and terminal block" src="https://raw.githubusercontent.com/ntatko/Podcast-Automator/main/docs/wiring_terminal_block.jpg" width="600"/>
 
 
 The buttons, all wired up
