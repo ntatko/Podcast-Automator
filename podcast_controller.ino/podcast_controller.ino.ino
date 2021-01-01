@@ -88,6 +88,7 @@ void setup() {
 //  saveRecording();
 //  delay(2000);
 //  resetEverything();
+//  copyTimeDate();
 }
 
 void loop() {
@@ -110,8 +111,6 @@ void loop() {
   Serial.print(digitalRead(PIN_deleteRecording));
   Serial.print("\tsave: ");
   Serial.println(digitalRead(PIN_saveRecording));
-
-  String saveName;
 
   if ( button_reset.fell() ) {
     resetEverything();
@@ -138,7 +137,7 @@ void loop() {
     updateLeds();
   } else if ( button_saveRecording.fell() && isRecorded ) {
     Serial.println("pressed save");
-    saveName = saveRecording();
+    saveRecording();
     deleteRecording();
     updateLeds();
   }
@@ -252,7 +251,7 @@ void playbackRecording() {
   Keyboard.release(KEY_SPACE);
 }
 
-String saveRecording() {
+void saveRecording() {
   // Right now, I'm using google drive, things automatically show up in a folder. Tab and shift+tab can be used
 
   // Technically called "render", pulls up a prompt
@@ -265,8 +264,17 @@ String saveRecording() {
   Keyboard.release(KEY_R);
 
   // Fill out render options prompt
-  String randomString = generateRecordingName();
-  Keyboard.println(randomString);
+  copyTimeDate();
+  delay(1000);
+  Keyboard.press(MODIFIERKEY_CTRL);
+  Keyboard.press(KEY_V);
+  delay(!00);
+  Keyboard.release(MODIFIERKEY_CTRL);
+  Keyboard.release(KEY_V);
+  delay(100);
+  Keyboard.press(KEY_ENTER);
+  delay(100);
+  Keyboard.release(KEY_ENTER);
 
   // wait for file to finish rendering
   delay(10000); // 10 seconds, might need more
@@ -276,8 +284,6 @@ String saveRecording() {
 
   isRecorded = false;
   isSaved = true;
-
-  return randomString;
 }
 
 void deleteRecording() {
@@ -351,4 +357,22 @@ String generateRecordingName(){
   digitalWrite(led_deleteRecording, HIGH);
   digitalWrite(led_saveRecording, HIGH);
   digitalWrite(led_playbackRecording, HIGH);
+ }
+
+ void copyTimeDate() {
+  Keyboard.press(MODIFIERKEY_RIGHT_GUI);
+  delay(10);
+  Keyboard.release(MODIFIERKEY_RIGHT_GUI);
+  delay(2000);
+  Keyboard.print("powershell");
+  delay(100);
+  Keyboard.press(KEY_ENTER);
+  Keyboard.release(KEY_ENTER);
+  delay(2000);
+  Keyboard.println("$currDate = Get-Date -Format \"yyyy-MM-dd.HH.mm\"");
+  delay(100);
+  Keyboard.println("$currDate + \" podcast recording\" | clip");
+  delay(100);
+  Keyboard.println("exit");
+  delay(100);
  }
